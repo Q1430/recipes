@@ -1,5 +1,6 @@
 package com.recipe.recipes.data.remote.api
 
+import com.recipe.recipes.data.remote.dto.AreaListDto
 import com.recipe.recipes.data.remote.dto.CategoryListDto
 import com.recipe.recipes.data.remote.dto.MealListDto
 import retrofit2.http.GET
