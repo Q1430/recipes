@@ -55,6 +55,7 @@ fun MealDetailScreen(
                         duration = SnackbarDuration.Short
                     )
                 }
+                else -> {}
             }
         }
     }
@@ -183,7 +184,7 @@ fun IngredientsGrid(ingredients: List<Ingredient>) {
         ingredients.forEach { (name, quantity) ->
             Row(Modifier.fillMaxWidth()) {
                 TableCell(text = name, weight = 1.5f)
-                TableCell(text = quantity, weight = 1f)
+                TableCell(text = quantity.toString(), weight = 1f)
             }
         }
     }

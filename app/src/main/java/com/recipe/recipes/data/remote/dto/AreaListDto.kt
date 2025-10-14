@@ -6,10 +6,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AreaListDto(
     @SerialName("meals")
-    val Areas: List<Area>
+    val areas: List<Area>?
 )
 
-
+@Serializable
 data class Area(
     val strArea: String?
 )

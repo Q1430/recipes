@@ -3,8 +3,8 @@ package com.recipe.recipes.data.remote.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MealListDto<T>(
-    val meals: List<T>? // API可能不返回meals字段或返回null，所以用可空类型更安全
+data class MealListDto(
+    val  meals: List<MealDto>? // API可能不返回meals字段或返回null，所以用可空类型更安全
 )
 /**
  * 这个类严格对应 "meals" 数组中每一个菜谱对象的结构

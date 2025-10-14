@@ -33,6 +33,6 @@ interface MealRepository {
 
     fun getMealsByIngredient(ingredient: String): Flow<Result<List<Meal>>>
 
-    fun getMealsByIngredients(ingredients: List<Ingredient>):Flow<Result<List<Meal>>>
+    fun getMealsByIngredients(ingredients: String):Flow<Result<List<Meal>>>
 
 }

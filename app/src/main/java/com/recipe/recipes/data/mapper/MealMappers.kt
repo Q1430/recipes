@@ -36,7 +36,7 @@ fun MealDto.toMeal(): Meal{
         .filter { (ingredient, _) -> !ingredient.isNullOrBlank() }
         .map { (ingredient, measure) ->
             Ingredient(
-                name = ingredient!!, // 我们已经过滤了null和blank，所以这里用!!是安全的
+                strIngredient = ingredient!!, // 我们已经过滤了null和blank，所以这里用!!是安全的
                 measure = measure.orEmpty() // 如果用量是null，则转换为空字符串
             )
         }

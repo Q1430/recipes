@@ -13,5 +13,5 @@ data class CategoryDto(
 @Serializable
 data class CategoryListDto(
     @SerialName("meals")
-    val categories: List<CategoryDto>
+    val categories: List<CategoryDto>?
 )

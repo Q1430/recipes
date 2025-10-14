@@ -6,6 +6,9 @@ package com.recipe.recipes.domain.model
  * @param measure 用量
  */
 data class Ingredient(
-    val name: String,
-    val measure: String?
+    val strIngredient: String,
+    val measure: String? = null,
+    val idIngredient:String? = null
+
+
 )
