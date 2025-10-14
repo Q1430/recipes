@@ -91,4 +91,6 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.6.0")
     //导航
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    //序列化
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }

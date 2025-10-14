@@ -7,5 +7,5 @@ package com.recipe.recipes.domain.model
  */
 data class Ingredient(
     val name: String,
-    val measure: String
+    val measure: String?
 )
