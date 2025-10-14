@@ -2,6 +2,7 @@ package com.recipe.recipes.data.mapper
 
 
 import com.recipe.recipes.data.remote.dto.MealDto
+import com.recipe.recipes.data.remote.dto.MealListDto
 import com.recipe.recipes.domain.model.Ingredient
 import com.recipe.recipes.domain.model.Meal
 

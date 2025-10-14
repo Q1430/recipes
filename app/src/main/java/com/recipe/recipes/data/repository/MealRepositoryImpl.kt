@@ -4,6 +4,9 @@ import com.recipe.recipes.data.local.FavoriteMealDao
 import com.recipe.recipes.data.remote.api.ApiService
 import com.recipe.recipes.data.mapper.toEntity
 import com.recipe.recipes.data.mapper.toMeal
+import com.recipe.recipes.domain.model.Area
+import com.recipe.recipes.domain.model.Category
+import com.recipe.recipes.domain.model.Ingredient
 import com.recipe.recipes.domain.model.Meal
 import com.recipe.recipes.domain.repository.MealRepository
 import com.recipe.recipes.util.OrderType
@@ -29,7 +32,20 @@ class MealRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun searchMealsByIngredient(ingredient: String): Flow<Result<List<Meal>>> {
+    override fun getMealsByIngredient(ingredient: String): Flow<Result<List<Meal>>>  = flow{
+//        try {
+//            val mealListDto = apiService.getMealsByIngredient(ingredient).meals
+//            if (!mealListDto.isNullOrEmpty()) {
+//                emit(Result.success(mealListDto.map{it.toMeal()}))
+//            } else {
+//                emit(Result.failure(Exception("No meal found")))
+//            }
+//        } catch (e: Exception) {
+//            emit(Result.failure(e))
+//        }
+    }
+
+    override fun getMealsByIngredients(ingredients: List<Ingredient>): Flow<Result<List<Meal>>> {
         TODO("Not yet implemented")
     }
 
@@ -67,6 +83,26 @@ class MealRepositoryImpl @Inject constructor(
 
     override fun isMealFavorite(mealId: String): Flow<Boolean> {
         return dao.isFavorite(mealId).map { it == 1 } // 将 1/0 转换为 true/false
+    }
+
+    override fun getAllArea(orderType: OrderType): Flow<Result<List<Area>>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getMealsByArea(area: String): Flow<Result<List<Meal>>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAllCategories(orderType: OrderType): Flow<Result<List<Category>>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getMealsByCategory(category: String): Flow<Result<List<Meal>>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAllIngredients(orderType: OrderType): Flow<Result<List<Ingredient>>> {
+        TODO("Not yet implemented")
     }
 
 }

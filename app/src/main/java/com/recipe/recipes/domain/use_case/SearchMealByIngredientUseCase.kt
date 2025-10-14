@@ -7,5 +7,4 @@ import javax.inject.Inject
 class SearchMealByIngredientUseCase @Inject constructor(
     private val repository: MealRepository
 ) {
-
 }
