@@ -5,6 +5,7 @@ import com.recipe.recipes.data.remote.dto.CategoryListDto
 import com.recipe.recipes.data.remote.dto.IngredientListDto
 import com.recipe.recipes.data.remote.dto.MealListDto
 import com.recipe.recipes.domain.model.Ingredient
+import com.recipe.recipes.domain.model.Meal
 import com.recipe.recipes.domain.model.MealList
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -87,5 +88,11 @@ interface ApiService {
     @GET("${API_VERSION}filter.php")
     suspend fun getMealsByIngredientList(@Query("i") ingredients:String):MealListDto
 
+    /**
+     * 按名搜索
+     * API search.php?s={mealName}
+     */
+    @GET("${API_VERSION}search.php")
+    suspend fun getMealByName(@Query("s") mealName:String):MealListDto
 
 }

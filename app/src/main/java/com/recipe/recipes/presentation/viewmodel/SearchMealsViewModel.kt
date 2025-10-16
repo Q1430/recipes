@@ -1,24 +1,141 @@
 package com.recipe.recipes.presentation.viewmodel
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.recipe.recipes.domain.model.Ingredient
 import com.recipe.recipes.domain.use_case.GetAllAreaUseCase
-import com.recipe.recipes.domain.use_case.GetMealByAreaUseCase
-import com.recipe.recipes.domain.use_case.GetMealByCategoryUseCase
-import com.recipe.recipes.domain.use_case.GetMealByIngredientUseCase
+import com.recipe.recipes.domain.use_case.GetAllCategoryUseCase
+import com.recipe.recipes.domain.use_case.GetAllIngredientUseCase
+import com.recipe.recipes.domain.use_case.GetMealByFilterUseCase
+import com.recipe.recipes.domain.use_case.GetMealByNameUseCase
+import com.recipe.recipes.domain.use_case.MealFilter
+import com.recipe.recipes.presentation.state.FilterType
 import com.recipe.recipes.presentation.state.SearchState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchMealsViewModel @Inject constructor(
-    private val getMealByAreaUseCase: GetMealByAreaUseCase,
-    private val getMealByIngredientUseCase: GetMealByIngredientUseCase,
-    private val getMealByCategoryUseCase: GetMealByCategoryUseCase
-) {
+    private val getAllAreaUseCase: GetAllAreaUseCase,
+    getAllCategoryUseCase: GetAllCategoryUseCase,
+    getAllIngredientUseCase: GetAllIngredientUseCase,
+    private val getMealByNameUseCase: GetMealByNameUseCase,
+    private val getMealByFilterUseCase: GetMealByFilterUseCase
+):ViewModel() {
     private val _state = MutableStateFlow(SearchState())
     val state :StateFlow<SearchState> = _state.asStateFlow()
+
+    private var searchJob: Job? = null
+
+    //当ui层搜索框文本变化是，调用此方法
+    fun onSearchQueryChanged(query:String){
+        _state.update { it.copy(searchQuery = query) }
+
+        //实现搜索防抖
+        searchJob?.cancel()//取消上一次搜索
+        searchJob = viewModelScope.launch {
+            delay(500L)
+            executeSearch(query)
+        }
+    }
+
+    fun onFilterSelected(filter: MealFilter){
+        executeSearch(filter=filter)
+    }
+
+
+    private fun executeSearch(query: String?="",filter:MealFilter?=null) {
+
+        val searchFlow = when{
+            query != null -> getMealByNameUseCase(query)
+            filter != null -> getMealByFilterUseCase(filter)
+            else -> return
+        }
+        // 1. 在Flow链外部，立即将状态更新为“加载中”
+        _state.update { it.copy(isLoading = true, error = null) }
+
+        searchFlow
+            .onEach { result->
+                result
+                    .onSuccess { meals ->
+                        _state.update { it.copy(isLoading = false, searchResults = meals) }
+                    }
+                    .onFailure { exception->
+                        _state.update { it.copy(isLoading = false, error = exception.message) }
+
+                    }
+                }
+            .catch { exceptionF ->
+                _state.update { it.copy(isLoading = false, error = exceptionF.message)
+                }
+            }.launchIn(viewModelScope)
+    }
+
+    fun onFlitChipClicked(filterType:FilterType){
+        _state.update { it.copy(expandedFilter = filterType) }
+    }
+    fun onFilterPopupDismissed(){
+        _state.update { it.copy(expandedFilter = null) }
+    }
+
+    fun onAreaSelected(area:String){
+        //清空其他筛选并立即搜索
+        _state.update {
+            it.copy(
+                selectedArea = area,
+                selectedCategory = null,
+                selectedIngredients = emptySet()
+            )
+        }
+        onFilterPopupDismissed()
+    }
+
+    fun onCategorySelected(category:String){
+        _state.update {
+            it.copy(
+                selectedCategory = category,
+                selectedArea = null,
+                selectedIngredients = emptySet()
+            )
+        }
+        onFilterPopupDismissed()
+    }
+
+    fun oneIngredientSelect(ingredient:String){
+        //更新临时选中的多选列表，但不立即搜索
+        _state.update { currentState->
+            val currentIngredients = currentState.selectedIngredients
+            val newIngredient = if (ingredient in currentIngredients){
+                currentIngredients - ingredient
+            }else{
+                currentIngredients + ingredient
+            }
+            currentState.copy(
+                selectedIngredients = newIngredient,
+                selectedCategory = null,
+                selectedArea = null)
+        }
+    }
+
+    fun applyIngredientFilter(){
+        //点击确定后才开始搜索
+        triggerSearch()
+        onFilterPopupDismissed()
+    }
+
+    private fun triggerSearch() {
+        TODO("多选搜索，将Set集合转成用','分割的String,交给UseCase")
+    }
 
 
 }

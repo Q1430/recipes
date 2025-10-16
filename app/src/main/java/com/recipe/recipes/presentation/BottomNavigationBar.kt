@@ -2,6 +2,7 @@ package com.recipe.recipes.presentation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -19,8 +20,14 @@ fun BottomNavigationBar(navController: NavController){
     val items = listOf(
         BottomNavItem(
             label = "发现",
+            icon = Icons.Outlined.Home,
+            route = DisScreen.Find.route
+        ),
+        BottomNavItem(
+            label = "搜索",
             icon = Icons.Outlined.Search,
             route = DisScreen.Find.route
+            // TODO:  改为搜索页
         ),
         BottomNavItem(
             label = "收藏",

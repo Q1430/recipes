@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 
@@ -71,6 +72,8 @@ class MealDetailViewModel @Inject constructor(
     /**
      * 根据 ID 获取菜谱的详细信息
      */
+    //不够健壮。如果 Use Case 内部的 Flow 在发射 Result 对象之前就因为某些原因（比如一个 map 操作符出错）
+    // 而抛出异常，.onEach 代码块根本不会被执行，isLoading 状态将永远停留在 true，也无法捕获到这个异常。
     private fun getMealDetails(mealId: String) {
         // 在调用前，可以先更新状态为加载中
         _state.update { it.copy(isLoading = true) }
@@ -85,8 +88,14 @@ class MealDetailViewModel @Inject constructor(
                         _state.update { it.copy(isLoading = false, error = exception.message) }
                     }
             }
+            //捕获任何意外使Flow崩溃的异常，确保isLoading总能被重置为false
+            .catch {exception ->
+                _state.update { it.copy(isLoading = false, error = exception.message) }
+            }
+
             .launchIn(viewModelScope)
     }
+
     /**
      * 持续监听收藏状态
      */

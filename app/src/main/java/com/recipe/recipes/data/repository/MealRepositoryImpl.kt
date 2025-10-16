@@ -62,6 +62,19 @@ class MealRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getMealByName(mealName: String): Flow<Result<List<Meal>>> = flow{
+        try {
+            val mealListDto = apiService.getMealByName(mealName).meals
+            if (!mealListDto.isNullOrEmpty()){
+                emit(Result.success(mealListDto.map { it.toMeal()}))
+            }else{
+                emit(Result.failure(Exception(NO_MEAL_FOUND)))
+            }
+        }catch (e:Exception){
+            emit(Result.failure(e))
+        }
+    }
+
     override fun getMealDetailsById(id: String): Flow<Result<Meal>>  = flow{
         try {
             val mealDto = apiService.getMealDetailsById(id).meals?.firstOrNull()
