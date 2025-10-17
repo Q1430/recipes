@@ -25,7 +25,6 @@ import com.recipe.recipes.domain.model.Meal
 
 @Composable
 fun FavoriteItem(
-    modifier: Modifier = Modifier,
     meal: Meal,
     onItemClick:(String) -> Unit,
     onFavoriteClick:(String) -> Unit

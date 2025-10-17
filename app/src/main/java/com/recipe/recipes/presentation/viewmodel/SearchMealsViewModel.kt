@@ -3,6 +3,7 @@ package com.recipe.recipes.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.recipe.recipes.domain.model.Ingredient
+import com.recipe.recipes.domain.model.Meal
 import com.recipe.recipes.domain.use_case.GetAllAreaUseCase
 import com.recipe.recipes.domain.use_case.GetAllCategoryUseCase
 import com.recipe.recipes.domain.use_case.GetAllIngredientUseCase
@@ -14,12 +15,15 @@ import com.recipe.recipes.presentation.state.SearchState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -49,39 +53,34 @@ class SearchMealsViewModel @Inject constructor(
         }
     }
 
-    fun onFilterSelected(filter: MealFilter){
-        executeSearch(filter=filter)
-    }
 
+    private fun executeSearch(query: String) {
 
-    private fun executeSearch(query: String?="",filter:MealFilter?=null) {
+        val searchFlow = getMealByNameUseCase(query)
 
-        val searchFlow = when{
-            query != null -> getMealByNameUseCase(query)
-            filter != null -> getMealByFilterUseCase(filter)
-            else -> return
+        if (query.isNotEmpty()) {
+            // 1. 在Flow链外部，立即将状态更新为“加载中”
+            _state.update { it.copy(isLoading = true, error = null) }
+            searchFlow
+                .onEach { result ->
+                    result
+                        .onSuccess { meals ->
+                            _state.update { it.copy(isLoading = false, searchResults = meals) }
+                        }
+                        .onFailure { exception ->
+                            _state.update { it.copy(isLoading = false, error = exception.message) }
+
+                        }
+                }
+                .catch { exceptionF ->
+                    _state.update {
+                        it.copy(isLoading = false, error = exceptionF.message)
+                    }
+                }.launchIn(viewModelScope)
         }
-        // 1. 在Flow链外部，立即将状态更新为“加载中”
-        _state.update { it.copy(isLoading = true, error = null) }
-
-        searchFlow
-            .onEach { result->
-                result
-                    .onSuccess { meals ->
-                        _state.update { it.copy(isLoading = false, searchResults = meals) }
-                    }
-                    .onFailure { exception->
-                        _state.update { it.copy(isLoading = false, error = exception.message) }
-
-                    }
-                }
-            .catch { exceptionF ->
-                _state.update { it.copy(isLoading = false, error = exceptionF.message)
-                }
-            }.launchIn(viewModelScope)
     }
 
-    fun onFlitChipClicked(filterType:FilterType){
+    fun onFilterChipClicked(filterType:FilterType){
         _state.update { it.copy(expandedFilter = filterType) }
     }
     fun onFilterPopupDismissed(){
@@ -110,21 +109,26 @@ class SearchMealsViewModel @Inject constructor(
         }
         onFilterPopupDismissed()
     }
+    //已在ui层用一个临时的tempSelectedIngredients代替
+//    fun oneIngredientSelect(ingredient:String){
+//        //更新临时选中的多选列表，但不立即搜索
+//        _state.update { currentState->
+//            val currentIngredients = currentState.selectedIngredients
+//            val newIngredient = if (ingredient in currentIngredients){
+//                currentIngredients - ingredient
+//            }else{
+//                currentIngredients + ingredient
+//            }
+//            currentState.copy(
+//                selectedIngredients = newIngredient,
+//                selectedCategory = null,
+//                selectedArea = null)
+//        }
+//    }
 
-    fun oneIngredientSelect(ingredient:String){
-        //更新临时选中的多选列表，但不立即搜索
-        _state.update { currentState->
-            val currentIngredients = currentState.selectedIngredients
-            val newIngredient = if (ingredient in currentIngredients){
-                currentIngredients - ingredient
-            }else{
-                currentIngredients + ingredient
-            }
-            currentState.copy(
-                selectedIngredients = newIngredient,
-                selectedCategory = null,
-                selectedArea = null)
-        }
+    fun resetIngredientFilter(){
+        _state.update { it.copy(selectedIngredients = emptySet()) }
+        onFilterPopupDismissed()
     }
 
     fun applyIngredientFilter(){
@@ -134,8 +138,51 @@ class SearchMealsViewModel @Inject constructor(
     }
 
     private fun triggerSearch() {
-        TODO("多选搜索，将Set集合转成用','分割的String,交给UseCase")
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+
+            val currentState = _state.value
+
+            val searchFlow: Flow<Result<List<Meal>>> = when{
+                currentState.selectedIngredients.isEmpty() ->{
+                    getMealByFilterUseCase(MealFilter.ByIngredient(currentState.selectedIngredients.joinToString(separator = ",")))
+                }
+
+                currentState.selectedCategory != null ->{
+                    getMealByFilterUseCase(MealFilter.ByCategory(currentState.selectedCategory))
+                }
+
+                currentState.selectedArea != null ->{
+                    getMealByFilterUseCase(MealFilter.ByArea(currentState.selectedArea))
+                }
+
+                else -> {
+                    flowOf(Result.success((emptyList())))
+            }
+        }
+            searchFlow
+                .onStart { _state.update { it.copy(isLoading = true, error = null) } }
+                .catch{e -> _state.update { it.copy(isLoading = false, error = e.message) }}
+                .collect { result ->
+                        result
+                            .onSuccess { data ->
+                                _state.update {
+                                    it.copy(
+                                        isLoading = false,
+                                        searchResults = data?: emptyList(),
+                                        error = null
+                                    )
+                                }
+                            }
+                            .onFailure {exception->
+                                _state.update {
+                                    it.copy(
+                                        isLoading = false,
+                                        error = exception.message
+                                    )
+                                }
+                            }
+                    }
+        }
     }
-
-
 }
