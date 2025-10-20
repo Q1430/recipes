@@ -11,5 +11,5 @@ data class IngredientDto(
 @Serializable
 data class IngredientListDto(
     @SerialName("meals")
-    val ingredients:List<IngredientDto>?
+    val meals:List<IngredientDto>?
 )

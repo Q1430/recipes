@@ -16,7 +16,7 @@ data class SearchState(
     val error: String? = null,
 
     //筛选条件
-    val selectedArea:String ?= null,
+    val selectedArea:String ?= "Chinese",
     val selectedCategory:String ?= null,
     val selectedIngredients:Set<String> = emptySet(),
     //所有弹窗都关闭

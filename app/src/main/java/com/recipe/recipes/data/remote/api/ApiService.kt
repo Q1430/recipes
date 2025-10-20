@@ -79,7 +79,7 @@ interface ApiService {
      * 列出所有成分
      */
 
-    @GET("${API_VERSION}list.php?")
+    @GET("${API_VERSION}list.php")
     suspend fun getAllIngredients(@Query("i") list: String = "list"): IngredientListDto
     /**
      * 按多种成分筛选

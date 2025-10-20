@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -21,7 +22,8 @@ import androidx.compose.ui.unit.sp
 fun FilterChip(
     text:String,
     isSelected: Boolean,
-    onClick:() -> Unit
+    onClick:() -> Unit,
+    modifier: Modifier = Modifier
 ){
     val backgroundColor = if (isSelected) Color(0xFFFFFBE5)else Color(0xFFF3F3F3)
     val contentColor = if (isSelected) Color(0xFFE5A700)else Color.Gray
@@ -30,11 +32,12 @@ fun FilterChip(
         modifier = Modifier
             .height(32.dp)
             .background(backgroundColor, shape = RoundedCornerShape(16.dp))
-            .clickable { onClick = onClick },
+            .clickable ( onClick = onClick )
+            .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.Center
     ) {
-        Text(text, color = contentColor, fontSize = 13.sp)
+        Text(text, color = contentColor, fontSize = 13.sp, maxLines = 1)
         Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = contentColor)
     }
 }

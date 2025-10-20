@@ -1,5 +1,6 @@
 package com.recipe.recipes.data.repository
 
+import android.util.Log
 import com.recipe.recipes.data.local.FavoriteMealDao
 import com.recipe.recipes.data.mapper.toCategory
 import com.recipe.recipes.data.remote.api.ApiService
@@ -113,7 +114,8 @@ class MealRepositoryImpl @Inject constructor(
 
     override fun getAllArea(orderType: OrderType): Flow<Result<List<Area>>> = flow {
         try {
-            val areaListDto = apiService.getAllArea().areas
+            val areaListDto = apiService.getAllArea().meals
+            Log.d("ALL Areas","areaListDto . $areaListDto")
             if (!areaListDto.isNullOrEmpty()){
                 emit(Result.success(areaListDto.map { areaName->
                     Area(strArea = areaName.strArea.toString()) }))
@@ -125,10 +127,24 @@ class MealRepositoryImpl @Inject constructor(
         }
 
     }
+    override fun getAllCategories(orderType: OrderType): Flow<Result<List<Category>>> = flow{
+        try {
+            val categoryListDto = apiService.getAllCategories().categories
+            Log.d("getAllCategories ","areaListDto . $categoryListDto")
+            if (!categoryListDto.isNullOrEmpty()){
+                emit(Result.success(categoryListDto.map{it.toCategory()}))
+            }else{
+                emit(Result.failure(Exception(NO_CATEGORY_FOUND)))
+            }
+        }catch (e:Exception){
+            emit(Result.failure(e))
+        }
+    }
 
     override fun getMealsByArea(area: String): Flow<Result<List<Meal>>>  = flow{
         try {
             val mealListDto = apiService.getMealsByArea(area).meals
+            Log.d("getMealByArea ","areaListDto . $mealListDto")
             if (!mealListDto.isNullOrEmpty()){
                 emit(Result.success(mealListDto.map { it.toMeal() }))
             }else{
@@ -139,18 +155,7 @@ class MealRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getAllCategories(orderType: OrderType): Flow<Result<List<Category>>> = flow{
-        try {
-            val categoryListDto = apiService.getAllCategories().categories
-            if (!categoryListDto.isNullOrEmpty()){
-                emit(Result.success(categoryListDto.map{it.toCategory()}))
-            }else{
-                emit(Result.failure(Exception(NO_CATEGORY_FOUND)))
-            }
-        }catch (e:Exception){
-            emit(Result.failure(e))
-        }
-    }
+
 
     override fun getMealsByCategory(category: String): Flow<Result<List<Meal>>> = flow {
         try {
@@ -167,7 +172,7 @@ class MealRepositoryImpl @Inject constructor(
 
     override fun getAllIngredients(orderType: OrderType): Flow<Result<List<Ingredient>>> = flow{
         try {
-            val ingredientListDto = apiService.getAllIngredients().ingredients
+            val ingredientListDto = apiService.getAllIngredients().meals
             if (!ingredientListDto.isNullOrEmpty()){
                 emit(Result.success(ingredientListDto.map { it.toIngredient()}))
             }else{

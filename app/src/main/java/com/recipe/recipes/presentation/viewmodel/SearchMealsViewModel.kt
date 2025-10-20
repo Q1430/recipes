@@ -1,7 +1,9 @@
 package com.recipe.recipes.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.recipe.recipes.domain.model.Ingredient
 import com.recipe.recipes.domain.model.Meal
 import com.recipe.recipes.domain.use_case.GetAllAreaUseCase
@@ -12,6 +14,7 @@ import com.recipe.recipes.domain.use_case.GetMealByNameUseCase
 import com.recipe.recipes.domain.use_case.MealFilter
 import com.recipe.recipes.presentation.state.FilterType
 import com.recipe.recipes.presentation.state.SearchState
+import com.recipe.recipes.util.OrderType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -31,8 +34,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchMealsViewModel @Inject constructor(
     private val getAllAreaUseCase: GetAllAreaUseCase,
-    getAllCategoryUseCase: GetAllCategoryUseCase,
-    getAllIngredientUseCase: GetAllIngredientUseCase,
+    private val getAllCategoryUseCase: GetAllCategoryUseCase,
+    private val getAllIngredientUseCase: GetAllIngredientUseCase,
     private val getMealByNameUseCase: GetMealByNameUseCase,
     private val getMealByFilterUseCase: GetMealByFilterUseCase
 ):ViewModel() {
@@ -40,6 +43,51 @@ class SearchMealsViewModel @Inject constructor(
     val state :StateFlow<SearchState> = _state.asStateFlow()
 
     private var searchJob: Job? = null
+
+    init {
+
+        //切换到页面时默认加载用于筛选的数据
+        loadInitialData()
+    }
+
+    private fun loadInitialData(){
+        getAllAreaUseCase(orderType = OrderType.Ascending)
+            .onEach {result ->
+                result
+                    .onSuccess { area ->
+                        _state.update { it.copy(allAreas = area) }
+                    }
+                    .onFailure { exception ->
+                        Log.e("SearchViewModel", "Failed to load areas", exception)
+                        _state.update { it.copy(error = exception.message) }
+                    }
+            }
+            .launchIn(viewModelScope)
+        getAllCategoryUseCase(orderType = OrderType.Ascending)
+            .onEach {result ->
+                result
+                    .onSuccess { categories ->
+                        _state.update { it.copy(allCategories = categories) }
+                    }
+                    .onFailure { exception ->
+                        Log.e("SearchViewModel", "Failed to load categories", exception)
+                        _state.update { it.copy(error = exception.message) }
+                    }
+            }
+            .launchIn(viewModelScope)
+        getAllIngredientUseCase(orderType = OrderType.Ascending)
+            .onEach {result ->
+                result
+                    .onSuccess { ingredients ->
+                        _state.update { it.copy(allIngredients = ingredients) }
+                    }
+                    .onFailure { exception ->
+                        Log.e("SearchViewModel", "Failed to load ingredients", exception)
+                        _state.update { it.copy(error = exception.message) }
+                    }
+            }
+            .launchIn(viewModelScope)
+    }
 
     //当ui层搜索框文本变化是，调用此方法
     fun onSearchQueryChanged(query:String){
@@ -81,10 +129,18 @@ class SearchMealsViewModel @Inject constructor(
     }
 
     fun onFilterChipClicked(filterType:FilterType){
-        _state.update { it.copy(expandedFilter = filterType) }
+        _state.update {
+            if (it.expandedFilter == filterType){
+                it.copy(expandedFilter = null)
+            }else{
+                it.copy(expandedFilter = filterType)
+            }
+        }
+        Log.d("Filter State","${_state.value.expandedFilter}")
     }
     fun onFilterPopupDismissed(){
         _state.update { it.copy(expandedFilter = null) }
+        Log.d("Filter PopUp Dismissed","${_state.value.expandedFilter}")
     }
 
     fun onAreaSelected(area:String){
@@ -99,6 +155,7 @@ class SearchMealsViewModel @Inject constructor(
         onFilterPopupDismissed()
     }
 
+    //按种类搜索
     fun onCategorySelected(category:String){
         _state.update {
             it.copy(
@@ -126,18 +183,21 @@ class SearchMealsViewModel @Inject constructor(
 //        }
 //    }
 
+    //重置
     fun resetIngredientFilter(){
         _state.update { it.copy(selectedIngredients = emptySet()) }
         onFilterPopupDismissed()
     }
 
-    fun applyIngredientFilter(){
+    fun applyIngredientFilter(confirmedIngredients:Set<String>){
+        //用ui传回来的最终数据更新状态
+        _state.update { it.copy(selectedIngredients = confirmedIngredients) }
         //点击确定后才开始搜索
         triggerSearch()
         onFilterPopupDismissed()
     }
 
-    private fun triggerSearch() {
+    private fun triggerSearch(ingredients:MutableSet<String> = mutableSetOf() ) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
 

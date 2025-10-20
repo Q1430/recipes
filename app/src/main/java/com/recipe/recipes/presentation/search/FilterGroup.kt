@@ -24,11 +24,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import com.recipe.recipes.presentation.state.FilterType
 import com.recipe.recipes.presentation.state.SearchState
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -47,15 +53,23 @@ fun FilterGroup(
     var tempSelectedIngredients by remember (state.expandedFilter){
         mutableStateOf(state.selectedIngredients)
     }
+    val density = LocalDensity.current
 
     Popup (
         alignment = Alignment.TopCenter,
-        onDismissRequest = onDismiss
+        onDismissRequest = onDismiss,
+        offset = with(density){
+            IntOffset(
+                x = 0,
+                y = 100.dp.toPx().roundToInt()
+            )
+        }
     ){
         Card (
             modifier = Modifier
+                .height(500.dp)
                 .fillMaxWidth()
-                .padding(top = 120.dp),
+                .padding(10.dp),
             elevation = CardDefaults.cardElevation(8.dp)
         ){
             Column(Modifier.padding(16.dp)){

@@ -13,7 +13,7 @@ import com.recipe.recipes.presentation.state.SearchState
 @Composable
 fun FilterChipBar(
     state:SearchState,
-    onFilterClick:(FilterType) -> Unit
+    onFilterClick:(FilterType) -> Unit,
 ){
     Row(
         modifier = Modifier
