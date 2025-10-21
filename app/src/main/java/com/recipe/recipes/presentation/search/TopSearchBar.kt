@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -70,6 +71,20 @@ fun TopSearchBar(
                         .clickable { onQueryChange("") }
                 )
             }
+            //暂时定为改变搜索框内容就进行一次搜索，
+//            IconButton(
+//                onClick = { executeSearch() },
+//                modifier = Modifier
+//                    .padding(8.dp)
+//                    .background(color = Color.Gray, RoundedCornerShape(14)),
+//                enabled = query.isNotEmpty()
+//            ){
+//                Icon(
+//                    imageVector = Icons.Default.Search,
+//                    contentDescription = "搜索", // 无障碍描述
+//                    tint = Color.White // 图标颜色（与灰色背景对比）
+//                )
+//            }
         }
     }
 }

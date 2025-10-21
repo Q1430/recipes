@@ -33,7 +33,7 @@ fun SearchScreen(
         TopSearchBar(
             query = state.searchQuery,
             onQueryChange = viewModel::onSearchQueryChanged,
-            onBackClick = { TODO("处理返回事件") }
+            onBackClick = { TODO("处理返回事件") },
         )
         Divider()
         FilterChipBar(

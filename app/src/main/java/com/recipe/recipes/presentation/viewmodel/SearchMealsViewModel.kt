@@ -45,9 +45,11 @@ class SearchMealsViewModel @Inject constructor(
     private var searchJob: Job? = null
 
     init {
-
         //切换到页面时默认加载用于筛选的数据
         loadInitialData()
+    }
+    fun cleanSearchData(){
+        _state.update { it.copy(searchResults = emptyList()) }
     }
 
     private fun loadInitialData(){
@@ -92,7 +94,6 @@ class SearchMealsViewModel @Inject constructor(
     //当ui层搜索框文本变化是，调用此方法
     fun onSearchQueryChanged(query:String){
         _state.update { it.copy(searchQuery = query) }
-
         //实现搜索防抖
         searchJob?.cancel()//取消上一次搜索
         searchJob = viewModelScope.launch {
@@ -100,7 +101,6 @@ class SearchMealsViewModel @Inject constructor(
             executeSearch(query)
         }
     }
-
 
     private fun executeSearch(query: String) {
 
@@ -136,7 +136,7 @@ class SearchMealsViewModel @Inject constructor(
                 it.copy(expandedFilter = filterType)
             }
         }
-        Log.d("Filter State","${_state.value.expandedFilter}")
+        Log.d("Filter State","$filterType ,${_state.value.expandedFilter}")
     }
     fun onFilterPopupDismissed(){
         _state.update { it.copy(expandedFilter = null) }
@@ -152,6 +152,7 @@ class SearchMealsViewModel @Inject constructor(
                 selectedIngredients = emptySet()
             )
         }
+        triggerSearch()
         onFilterPopupDismissed()
     }
 
@@ -164,6 +165,7 @@ class SearchMealsViewModel @Inject constructor(
                 selectedIngredients = emptySet()
             )
         }
+        triggerSearch()
         onFilterPopupDismissed()
     }
     //已在ui层用一个临时的tempSelectedIngredients代替
@@ -191,28 +193,36 @@ class SearchMealsViewModel @Inject constructor(
 
     fun applyIngredientFilter(confirmedIngredients:Set<String>){
         //用ui传回来的最终数据更新状态
-        _state.update { it.copy(selectedIngredients = confirmedIngredients) }
-        //点击确定后才开始搜索
+        _state.update {
+            it.copy(
+                selectedIngredients = confirmedIngredients,
+                selectedCategory = null,
+                selectedArea = null
+            )
+        }
+        //点击确定后才开始搜it索
         triggerSearch()
         onFilterPopupDismissed()
     }
 
-    private fun triggerSearch(ingredients:MutableSet<String> = mutableSetOf() ) {
+    private fun triggerSearch() {
+        //搜索前先清空之前的结果
+        cleanSearchData()
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
 
             val currentState = _state.value
 
             val searchFlow: Flow<Result<List<Meal>>> = when{
-                currentState.selectedIngredients.isEmpty() ->{
+                currentState.selectedIngredients.isNotEmpty() -> {
                     getMealByFilterUseCase(MealFilter.ByIngredient(currentState.selectedIngredients.joinToString(separator = ",")))
                 }
 
-                currentState.selectedCategory != null ->{
+                currentState.selectedCategory != null -> {
                     getMealByFilterUseCase(MealFilter.ByCategory(currentState.selectedCategory))
                 }
 
-                currentState.selectedArea != null ->{
+                currentState.selectedArea != null -> {
                     getMealByFilterUseCase(MealFilter.ByArea(currentState.selectedArea))
                 }
 
