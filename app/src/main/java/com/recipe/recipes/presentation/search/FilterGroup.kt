@@ -1,6 +1,5 @@
 package com.recipe.recipes.presentation.search
 
-import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,12 +8,16 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -40,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import com.recipe.recipes.presentation.state.FilterType
 import com.recipe.recipes.presentation.state.SearchState
+import okhttp3.internal.notifyAll
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -61,7 +65,6 @@ fun FilterGroup(
     }
     val density = LocalDensity.current
 
-    var scrollState = rememberScrollState()
     Popup (
         alignment = Alignment.TopCenter,
         onDismissRequest = onDismiss,
@@ -107,45 +110,35 @@ fun FilterGroup(
                         }
                     }
                     FilterType.INGREDIENT -> {
-                        Box(){
-                            Column(
+                        Column(
+                            modifier = Modifier.padding(end = 12.dp)
+                        ) {
+                            Box(modifier = Modifier
+                                .fillMaxWidth()
+                                .height(375.dp))
+                            LazyVerticalGrid(
+                                columns = GridCells.Adaptive(minSize = 90.dp),
                                 modifier = Modifier
-                                    .height(375.dp)
-                                    .verticalScroll(rememberScrollState())
-                                    .padding(end = 12.dp)
+                                    .fillMaxWidth()
+                                    .height(375.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                FlowRow(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    state.allIngredients.forEach{ingredient ->
-                                        val isSelected = ingredient.strIngredient in tempSelectedIngredients
-                                        FilterButton(
-                                            text = ingredient.strIngredient,
-                                            isSelected = isSelected,
-                                            onClick = {
-                                                tempSelectedIngredients = if (isSelected){
-                                                    tempSelectedIngredients - ingredient.strIngredient
-                                                }else{
-                                                    tempSelectedIngredients + ingredient.strIngredient
-                                                }
+                                items(state.allIngredients){ingredient ->
+                                    val isSelected = ingredient.strIngredient in tempSelectedIngredients
+                                    FilterButton(
+                                        text = ingredient.strIngredient,
+                                        isSelected = isSelected,
+                                        onClick = {
+                                            tempSelectedIngredients = if (isSelected){
+                                                tempSelectedIngredients - ingredient.strIngredient
+                                            }else{
+                                                tempSelectedIngredients + ingredient.strIngredient
                                             }
-                                        )
-                                    }
+                                        }
+                                    )
                                 }
                             }
-                            VerticalScrollbar(
-                                modifier = Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .fillMaxSize()
-                                    .width(6.dp),
-                                adapter = TODO(),
-                                reverseLayout = TODO(),
-                                style = TODO(),
-                                interactionSource = TODO(),
-                            )
-                        }
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Row (
@@ -171,5 +164,5 @@ fun FilterGroup(
             }
         }
     }
-
+}
 }

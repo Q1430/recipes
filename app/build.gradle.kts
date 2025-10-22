@@ -55,7 +55,7 @@ dependencies {
 
     // Hilt for Dependency Injection
     implementation("com.google.dagger:hilt-android:2.51.1")
-    implementation(libs.androidx.foundation.desktop)
+    implementation("androidx.compose.foundation:foundation:1.9.3")
     ksp("com.google.dagger:hilt-compiler:2.51.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
@@ -97,5 +97,14 @@ dependencies {
 
     //图标
     implementation("androidx.compose.material:material-icons-extended")
+
+    //ExoPlayer
+    implementation("androidx.media3:media3-exoplayer:1.8.0")
+    implementation("androidx.media3:media3-exoplayer-dash:1.8.0")
+    implementation("androidx.media3:media3-ui:1.8.0")
+    implementation("androidx.media3:media3-ui-compose:1.8.0")
+
+    //youtube视频提取库
+    implementation("com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT")
 
 }
