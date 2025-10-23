@@ -98,13 +98,16 @@ dependencies {
     //图标
     implementation("androidx.compose.material:material-icons-extended")
 
-    //ExoPlayer
-    implementation("androidx.media3:media3-exoplayer:1.8.0")
-    implementation("androidx.media3:media3-exoplayer-dash:1.8.0")
-    implementation("androidx.media3:media3-ui:1.8.0")
-    implementation("androidx.media3:media3-ui-compose:1.8.0")
+//由于youtube限制，暂时只能用android-youtube-player
+//    //ExoPlayer
+//    implementation("androidx.media3:media3-exoplayer:1.8.0")
+//    implementation("androidx.media3:media3-exoplayer-dash:1.8.0")
+//    implementation("androidx.media3:media3-ui:1.8.0")
+//    implementation("androidx.media3:media3-ui-compose:1.8.0")
+//
+//    //youtube视频提取库
+//    implementation("com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT")
 
-    //youtube视频提取库
-    implementation("com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT")
+    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0")
 
 }
