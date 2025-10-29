@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.recipe.recipes.domain.model.Meal
 import com.recipe.recipes.presentation.viewmodel.SearchMealsViewModel
 
 @Composable
@@ -52,16 +54,26 @@ fun SearchScreen(
                 )
             }
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-
-            ) {
-                //先用这个测试
-                items(state.searchResults) { meal ->
-                    // 在这里放置您的菜谱列表项UI
-                    Text(text = meal.name, modifier = Modifier.fillMaxWidth())
+            if (state.searchResults.isEmpty()){
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ){
+                    Text("没搜到，玩去吧")
+                }
+            }else{
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+                    items(state.searchResults){meal ->
+                        ResultItem(
+                            meal = meal,
+                            onItemClick = { TODO("导航问题")},
+                            onFavoriteClick = { TODO("全局共享FavoriteViewModel和导航问题")},
+                            isFavorite = true
+                        )
+                    }
                 }
             }
         }
