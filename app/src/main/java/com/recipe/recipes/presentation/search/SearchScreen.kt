@@ -34,24 +34,25 @@ fun SearchScreen(
     favoritesViewModel: FavoritesViewModel
 
 ){
-    val state by searchMealsViewModel.state.collectAsStateWithLifecycle()
+    val searchState by searchMealsViewModel.state.collectAsStateWithLifecycle()
+    val favoriteState by favoritesViewModel.state.collectAsState()
 
     Column (modifier = Modifier.fillMaxSize()) {
         TopSearchBar(
-            query = state.searchQuery,
+            query = searchState.searchQuery,
             onQueryChange = searchMealsViewModel::onSearchQueryChanged,
-            onBackClick = { TODO("处理返回事件") },
+            onBackClick = { navController.popBackStack() },
         )
         Divider()
         FilterChipBar(
-            state = state,
+            state = searchState,
             onFilterClick = searchMealsViewModel::onFilterChipClicked
         )
         Box(modifier = Modifier.fillMaxSize()) {
-            if (state.isLoading) {
+            if (searchState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
-            state.error?.let { error ->
+            searchState.error?.let { error ->
                 Text(
                     text = error,
                     color = MaterialTheme.colorScheme.error,
@@ -59,7 +60,7 @@ fun SearchScreen(
                 )
             }
 
-            if (state.searchResults.isEmpty()){
+            if (searchState.searchResults.isEmpty()){
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -71,11 +72,17 @@ fun SearchScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp)
                 ) {
-                    items(state.searchResults){meal ->
+                    items(searchState.searchResults){meal ->
                         ResultItem(
                             meal = meal,
-                            onItemClick = { TODO("导航问题")},
-                            onFavoriteClick = { TODO("全局共享FavoriteViewModel和导航问题")},
+                            onItemClick = { navController.navigate("detail_screen/${meal.id}")},
+                            onFavoriteClick = {
+                                if (favoriteState.favoriteMeals.contains(meal)) {
+                                TODO("")
+                                }else {
+                                    TODO()
+                                }
+                                              },
                             isFavorite = true
                         )
                     }
@@ -85,7 +92,7 @@ fun SearchScreen(
     }
     // 5. 根据状态条件渲染弹窗，并将所有事件传递给ViewModel
     FilterGroup(
-        state = state,
+        state = searchState,
         onDismiss = searchMealsViewModel::onFilterPopupDismissed,
         onAreaSelected = searchMealsViewModel::onAreaSelected,
         onCategorySelected = searchMealsViewModel::onCategorySelected,

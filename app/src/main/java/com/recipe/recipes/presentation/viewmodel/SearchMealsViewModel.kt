@@ -46,6 +46,8 @@ class SearchMealsViewModel @Inject constructor(
 
     init {
         //切换到页面时默认加载用于筛选的数据
+        onAreaSelected("Chinese")
+        TODO("后期改为跟据ip推荐")
         loadInitialData()
     }
     fun cleanSearchData(){
