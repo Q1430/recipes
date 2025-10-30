@@ -11,9 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.recipe.recipes.presentation.discovery.DisScreen
-import com.recipe.recipes.presentation.favorite.FavScreen
 import androidx.compose.runtime.getValue
+import com.recipe.recipes.presentation.navigation.Routes
 
 @Composable
 fun BottomNavigationBar(navController: NavController){
@@ -21,18 +20,18 @@ fun BottomNavigationBar(navController: NavController){
         BottomNavItem(
             label = "发现",
             icon = Icons.Outlined.Home,
-            route = DisScreen.Find.route
+            route = Routes.DISCOVERY_SCREEN
         ),
         BottomNavItem(
             label = "搜索",
             icon = Icons.Outlined.Search,
-            route = DisScreen.Find.route
+            route = Routes.SEARCH_SCREEN
             // TODO:  改为搜索页
         ),
         BottomNavItem(
             label = "收藏",
             icon = Icons.Outlined.FavoriteBorder, // 收藏图标
-            route = FavScreen.Favorite.route
+            route = Routes.FAVORITE_SCREEN
         )
     )
     NavigationBar {

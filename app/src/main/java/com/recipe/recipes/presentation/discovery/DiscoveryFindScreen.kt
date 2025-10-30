@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.recipe.recipes.R
+import com.recipe.recipes.presentation.navigation.Routes
 
 @Composable
 fun DiscoveryFindScreen(
@@ -42,7 +43,7 @@ fun DiscoveryFindScreen(
         Spacer(modifier = Modifier.height(25.dp))
         Button(
             onClick = {
-                navController.navigate(DisScreen.GetRandom.route)
+                navController.navigate(Routes.RANDOM_SCREEN)
             },
             modifier = Modifier.fillMaxWidth()
         ) {

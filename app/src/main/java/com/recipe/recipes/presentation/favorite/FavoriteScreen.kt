@@ -15,15 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.recipe.recipes.presentation.discovery.DisScreen
 import com.recipe.recipes.presentation.favorite.FavoriteItem
+import com.recipe.recipes.presentation.navigation.Routes
 import com.recipe.recipes.presentation.viewmodel.FavoritesViewModel
 import com.recipe.recipes.util.OrderType
 
 @Composable
 fun FavoritesScreen(
     navController: NavController,
-    viewModel: FavoritesViewModel = hiltViewModel<FavoritesViewModel>()
+    viewModel: FavoritesViewModel
 ) {
     // 订阅 ViewModel 的 state，当 state 变化时，UI 会自动重组
     val state by viewModel.state.collectAsState()
@@ -76,7 +76,7 @@ fun FavoritesScreen(
                         FavoriteItem(
                             meal = meal,
                             onItemClick = { mealId ->
-                                navController.navigate(DisScreen.MealDetail.createRoute(mealId))
+                                navController.navigate("detail_screen/$mealId")
                             },
                             onFavoriteClick = { mealId ->
                                 viewModel.onFavoriteClicked(mealId)

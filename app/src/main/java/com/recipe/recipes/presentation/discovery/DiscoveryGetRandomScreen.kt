@@ -32,12 +32,13 @@ import com.recipe.recipes.R
 import com.recipe.recipes.presentation.viewmodel.DiscoveryViewModel
 import com.recipe.recipes.ui.theme.Blue60
 import androidx.compose.runtime.getValue
+import com.recipe.recipes.presentation.navigation.Routes
 
 
 @Composable
 fun DiscoveryGetRandomScreen(
     navController: NavController,
-    discoveryViewModel: DiscoveryViewModel = hiltViewModel<DiscoveryViewModel>(),
+    discoveryViewModel: DiscoveryViewModel
 ){
     val state by discoveryViewModel.state.collectAsState()
     // 1. 使用 Scaffold 作为根布局
@@ -85,7 +86,7 @@ fun DiscoveryGetRandomScreen(
         Spacer(modifier = Modifier.height(10.dp))
         AsyncImage(
             model = state.randomMeal?.thumbnailUrl, // 直接将 String 类型的 URL 赋值给 model
-            contentDescription = "从网络加载的图片", // 推荐写上有意义的描述
+            contentDescription = "从网络加载的图片",
             modifier = Modifier
                 .size(400.dp),
             contentScale = ContentScale.Crop,
@@ -96,7 +97,7 @@ fun DiscoveryGetRandomScreen(
         Column {
             Button(
                 onClick = {
-                    navController.navigate(DisScreen.MealDetail.createRoute(state.randomMeal?.id ?: ""))
+                    navController.navigate("detail_screen/${state.randomMeal?.id}")
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RectangleShape,
@@ -105,7 +106,7 @@ fun DiscoveryGetRandomScreen(
                 Text("好，就决定是你了", modifier = Modifier.padding(vertical = 8.dp), fontSize = 16.sp)
             }
             Button(
-                onClick = { navController.navigate(DisScreen.GetRandom.route)},
+                onClick = { navController.navigate(Routes.RANDOM_SCREEN)},
                 modifier = Modifier.fillMaxWidth(),
                 shape = RectangleShape,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray, contentColor = Color.White)

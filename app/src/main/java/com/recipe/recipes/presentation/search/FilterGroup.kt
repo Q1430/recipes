@@ -113,30 +113,34 @@ fun FilterGroup(
                         Column(
                             modifier = Modifier.padding(end = 12.dp)
                         ) {
-                            Box(modifier = Modifier
-                                .fillMaxWidth()
-                                .height(375.dp))
-                            LazyVerticalGrid(
-                                columns = GridCells.Adaptive(minSize = 90.dp),
+                            Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(375.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    .height(375.dp)
                             ) {
-                                items(state.allIngredients){ingredient ->
-                                    val isSelected = ingredient.strIngredient in tempSelectedIngredients
-                                    FilterButton(
-                                        text = ingredient.strIngredient,
-                                        isSelected = isSelected,
-                                        onClick = {
-                                            tempSelectedIngredients = if (isSelected){
-                                                tempSelectedIngredients - ingredient.strIngredient
-                                            }else{
-                                                tempSelectedIngredients + ingredient.strIngredient
+                                LazyVerticalGrid(
+                                    columns = GridCells.Adaptive(minSize = 90.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(375.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    items(state.allIngredients) { ingredient ->
+                                        val isSelected =
+                                            ingredient.strIngredient in tempSelectedIngredients
+                                        FilterButton(
+                                            text = ingredient.strIngredient,
+                                            isSelected = isSelected,
+                                            onClick = {
+                                                tempSelectedIngredients = if (isSelected) {
+                                                    tempSelectedIngredients - ingredient.strIngredient
+                                                } else {
+                                                    tempSelectedIngredients + ingredient.strIngredient
+                                                }
                                             }
-                                        }
-                                    )
+                                        )
+                                    }
                                 }
                             }
                         Spacer(modifier = Modifier.height(16.dp))

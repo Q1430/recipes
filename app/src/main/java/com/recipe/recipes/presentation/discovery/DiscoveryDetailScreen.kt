@@ -29,7 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
-import com.recipe.recipes.presentation.favorite.FavScreen
+import com.recipe.recipes.presentation.navigation.Routes
 import com.recipe.recipes.presentation.viewmodel.MealDetailViewModel
 import com.recipe.recipes.util.UiEvent
 
@@ -40,7 +40,7 @@ import com.recipe.recipes.util.UiEvent
 fun MealDetailScreen(
     mealId: String,
     navController: NavController,
-    mealDetailViewModel: MealDetailViewModel = hiltViewModel<MealDetailViewModel>()
+    mealDetailViewModel: MealDetailViewModel
 ) {
     val state by mealDetailViewModel.state.collectAsState()
     val meal = state.meal
@@ -75,7 +75,7 @@ fun MealDetailScreen(
                             Button(
                                 modifier = Modifier.align(Alignment.CenterStart),
                                 onClick = {
-                                    navController.navigate(DisScreen.GetRandom.route)
+                                    navController.navigate(Routes.RANDOM_SCREEN)
                                 }
                             ) {
                                 Text(

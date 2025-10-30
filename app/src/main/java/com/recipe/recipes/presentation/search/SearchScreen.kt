@@ -22,25 +22,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.recipe.recipes.domain.model.Meal
+import com.recipe.recipes.presentation.viewmodel.FavoritesViewModel
 import com.recipe.recipes.presentation.viewmodel.SearchMealsViewModel
 
 @Composable
 fun SearchScreen(
-    viewModel:SearchMealsViewModel = hiltViewModel()
+    navController: NavController,
+    searchMealsViewModel:SearchMealsViewModel,
+    favoritesViewModel: FavoritesViewModel
+
 ){
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state by searchMealsViewModel.state.collectAsStateWithLifecycle()
 
     Column (modifier = Modifier.fillMaxSize()) {
         TopSearchBar(
             query = state.searchQuery,
-            onQueryChange = viewModel::onSearchQueryChanged,
+            onQueryChange = searchMealsViewModel::onSearchQueryChanged,
             onBackClick = { TODO("处理返回事件") },
         )
         Divider()
         FilterChipBar(
             state = state,
-            onFilterClick = viewModel::onFilterChipClicked
+            onFilterClick = searchMealsViewModel::onFilterChipClicked
         )
         Box(modifier = Modifier.fillMaxSize()) {
             if (state.isLoading) {
@@ -81,10 +86,10 @@ fun SearchScreen(
     // 5. 根据状态条件渲染弹窗，并将所有事件传递给ViewModel
     FilterGroup(
         state = state,
-        onDismiss = viewModel::onFilterPopupDismissed,
-        onAreaSelected = viewModel::onAreaSelected,
-        onCategorySelected = viewModel::onCategorySelected,
-        onIngredientReset = viewModel::resetIngredientFilter,
-        onIngredientsConfirmed = viewModel::applyIngredientFilter
+        onDismiss = searchMealsViewModel::onFilterPopupDismissed,
+        onAreaSelected = searchMealsViewModel::onAreaSelected,
+        onCategorySelected = searchMealsViewModel::onCategorySelected,
+        onIngredientReset = searchMealsViewModel::resetIngredientFilter,
+        onIngredientsConfirmed = searchMealsViewModel::applyIngredientFilter
     )
 }
