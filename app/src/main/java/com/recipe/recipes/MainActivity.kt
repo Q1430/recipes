@@ -23,7 +23,6 @@ import androidx.navigation.compose.rememberNavController
 import com.recipe.recipes.presentation.BottomNavigationBar
 import com.recipe.recipes.presentation.discovery.DiscoveryFindScreen
 import com.recipe.recipes.presentation.navigation.AppNavigation
-import com.recipe.recipes.presentation.player.CustomYoutubePlayer
 import com.recipe.recipes.presentation.player.YoutubePlayer
 import com.recipe.recipes.presentation.search.SearchScreen
 import com.recipe.recipes.presentation.viewmodel.DiscoveryViewModel

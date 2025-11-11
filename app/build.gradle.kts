@@ -76,7 +76,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0") // 日志拦截器，只保留一个
 
-
 // 添加 Gson 核心库
     implementation("com.google.code.gson:gson:2.10.1")
 // 添加 Retrofit 的 Gson 转换器
@@ -96,20 +95,11 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
     //序列化
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-
     //图标
     implementation("androidx.compose.material:material-icons-extended")
-
-//由于youtube限制，暂时只能用android-youtube-player
-//    //ExoPlayer
-//    implementation("androidx.media3:media3-exoplayer:1.8.0")
-//    implementation("androidx.media3:media3-exoplayer-dash:1.8.0")
-//    implementation("androidx.media3:media3-ui:1.8.0")
-//    implementation("androidx.media3:media3-ui-compose:1.8.0")
-//
-//    //youtube视频提取库
-//    implementation("com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT")
-
+    //YouTube播放器
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0")
-
+    //ExoPlayer
+    implementation("androidx.media3:media3-exoplayer:1.8.0")
+    implementation("androidx.media3:media3-ui:1.8.0")
 }

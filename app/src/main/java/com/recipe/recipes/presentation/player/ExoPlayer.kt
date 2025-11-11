@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
@@ -37,7 +38,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun ExoPlayer(
     modifier: Modifier = Modifier,
-    videoUrl:String,
+    videoUrl:String = "http://vjs.zencdn.net/v/oceans.mp4",
     playWhenReady:Boolean = true
 ) {
     val context = LocalContext.current
@@ -167,12 +168,12 @@ fun ExoPlayer(
             }
         )
         //根据播放器状态选择显示画面
-        if (playbackState == Player.STATE_BUFFERING) {
-            TODO("缓冲")
-        }
-        if (playbackState == Player.STATE_ENDED) {
-            TODO("结束")
-        }
+//        if (playbackState == Player.STATE_BUFFERING) {
+//            TODO("缓冲")
+//        }
+//        if (playbackState == Player.STATE_ENDED) {
+//            TODO("结束")
+//        }
     }
 }
 //辅助方法，获取Activity
@@ -180,4 +181,10 @@ private fun Context.findActivity(): Activity? = when(this){
     is Activity -> this
     is ContextWrapper -> baseContext.findActivity()
     else -> null
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ExoplayerTest(){
+    ExoPlayer()
 }

@@ -1,5 +1,7 @@
 package com.recipe.recipes.presentation.player.com.recipe.recipes.presentation.player
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,16 +14,23 @@ import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Replay
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
+import kotlinx.coroutines.delay
 
 @Composable
 fun PlayerController(
@@ -38,8 +47,34 @@ fun PlayerController(
     onSeek:(Long) -> Unit,
     onFullScreenClick:(Boolean) -> Unit
 ){
-    Box(modifier = modifier) {
+    //控制器可见性状态
+    var isControlsVisible by remember{ mutableStateOf(true)}
+
+    //隐藏逻
+    LaunchedEffect(isControlsVisible ,isPlaying,playbackState) {
+        if (isControlsVisible && isPlaying && playbackState == Player.STATE_READY ){
+            delay(3000)
+            isControlsVisible = false
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .clickable(
+                //去除点击波纹效果
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+            ){
+                //切换控制器可见性
+                isControlsVisible = !isControlsVisible
+            }
+    ) {
         when {
+            //缓冲中，显示缓冲图
+            playbackState == Player.STATE_BUFFERING ->{
+                CircularProgressIndicator(color = Color.White)
+                //TODO("先用这个")
+            }
             // 播放结束时，显示重播按钮
             playbackState == Player.STATE_ENDED -> {
                 IconButton(
@@ -49,6 +84,7 @@ fun PlayerController(
                     Icon(Icons.Default.Replay, "Replay", tint = Color.White)
                 }
             }
+            //根据isControlsVisible显示播放和暂停
             // 正在播放时，显示暂停
             isPlaying -> {
                 IconButton(
